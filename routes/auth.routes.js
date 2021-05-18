@@ -1,6 +1,19 @@
 const express = require('express');
 const passport = require('passport');
+const User = require('../model/User');
 const router = express.Router();
+
+passport.serializeUser((user, done) => {
+    return done(null, user._id);
+});
+passport.deserializeUser(async(userId, done) => {
+    try {
+        const existingUser = await User.findById(userId);
+        return done(null, existingUser);
+    } catch (error) {
+        return done(error);
+    }
+});
 
 //auth/register
 router.post ('/register', (req, res, next) => {
