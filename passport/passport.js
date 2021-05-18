@@ -4,6 +4,18 @@ const bcrypt = require('bcrypt');
 const User = require('../model/User');
 const SALT_ROUNDS = 10;
 
+passport.serializeUser((user, done) => {
+    return done(null, user._id);
+});
+passport.deserializeUser(async(userId, done) => {
+    try {
+        const existingUser = await User.findById(userId);
+        return done(null, existingUser);
+    } catch (error) {
+        return done(error);
+    }
+});
+
 const registerStrategy = new LocalStrategy(
     {
         usernameField: 'email',
