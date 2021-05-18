@@ -1,13 +1,16 @@
 require('dotenv').config();
+
+const express = require('express');
+const mongoose = require('mongoose');
 const passport = require('passport');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const db = require('./db');
 const indexRoutes = require('./routes/index.routes');
 const authRoutes = require('./routes/auth.routes');
 db.connect();
 
 const PORT = 5000;
-
-const express = require('express');
 
 const app = express();
 
@@ -16,6 +19,18 @@ const app = express();
 /* const PORT = process.env.PORT; */
 
 require('./passport/passport');
+
+app.use(session({
+    secret:'AasWsfi.854-@',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 48 * 60 * 60 * 1000
+    },
+    store:MongoStore.create({mongoUrl:db.DB_URL}),
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 /* app.use('/', (req, res) => {
     res.send('streamly');

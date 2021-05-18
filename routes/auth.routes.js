@@ -34,7 +34,7 @@ router.post ('/register', (req, res, next) => {
     })(req, res, next);
 });
 
-
+//auth/login
 router.post('/login', (req, res, next) => {
     const {username, email, password} = req.body;
     console.log('Logueando al usuario...', req.body);
@@ -47,7 +47,15 @@ router.post('/login', (req, res, next) => {
         if(error) {
             return res.json(error.message);
         }
-        return res.json(user);
+
+        req.login(user, (error) => {
+            if(error) {
+                return res.send(error.message);
+            }
+            return res.send(user);
+        });
+
+        /* return res.json(user); */
     })(req, res, next);
 });
 
