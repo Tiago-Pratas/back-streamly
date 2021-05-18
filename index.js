@@ -8,12 +8,12 @@ const PORT = process.env.PORT;
 
 
 
-app.use('/', (req, res, next) => {
-    res.send('streamly')
+app.use('/', (req, res) => {
+    res.send('streamly');
 });
 
 const serverCallback = () => {
-    console.log(`server port: ${PORT}`)
+    console.log(`server port: ${PORT}`);
 };
 
 app.listen(PORT, serverCallback);
