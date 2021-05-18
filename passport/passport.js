@@ -34,4 +34,33 @@ const registerStrategy = new LocalStrategy(
     }
 );
 
+const loginStrategy = new LocalStrategy(
+    {
+        usernameField: 'email',
+        passwordField: 'password',
+        passReqToCallback: true,
+    },
+    async (req, email, password, done) => {
+        try {
+            const currentUser = await User.findOne({email});
+            if(!currentUser) {
+                const error = new Error('Email or password not valid');
+                return done(error);
+            }
+            const isValidPassword = await bcrypt.compare(
+                password,
+                currentUser.password
+            );
+            if(!isValidPassword) {
+                const error = new Error('Email or password not valid');
+                return done(error);
+            }
+            return done(null, currentUser);
+        } catch (error) {
+            return done(error);
+        }
+    }
+);
+
+passport.use('acceso', loginStrategy);
 passport.use('registro', registerStrategy);
