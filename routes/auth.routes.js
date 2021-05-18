@@ -59,5 +59,22 @@ router.post('/login', (req, res, next) => {
     })(req, res, next);
 });
 
+//auth/logout
+
+router.post('/logout', (req, res) => {
+    console.log('req.user', req.user);
+
+    if(req.user) {
+        req.logout();
+
+        req.session.destroy(() => {
+            res.clearCookie('connect.sid');
+            return res.json('Usuario Deslogueado');
+        });
+    }else {
+        return res.json('No user found');
+    }
+});
+
 
 module.exports = router;
