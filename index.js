@@ -13,14 +13,10 @@ const PORT = 5000;
 
 const app = express();
 
-/* const router = express.Router(); */
-
-/* const PORT = process.env.PORT; */
-
 require('./passport/passport');
 
 app.use(session({
-    secret:'AasWsfi.854-@',
+    secret:process.env.JWT_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -30,10 +26,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
-/* app.use('/', (req, res) => {
-    res.send('streamly');
-}); */
 
 app.use(passport.initialize());
 app.use(express.json());
@@ -48,16 +40,14 @@ const serverCallback = () => {
 
 app.listen(PORT, serverCallback);
 
-//creamos el middleware encargado de capturar todas las rutas:
-
+//middleware to handle route exceptions
 app.use('*', (req, res, next) => {
     const error = new Error('Route not found');
     error.status = 404;
     next(error);
 });
 
-//creamos el middleware para la gestion de errores
-
+//middleware to handle exceptions
 app.use((error, req, res,) => {
     return res.status(error.status || 500).json(error.message || 'Unexpected error');
 
