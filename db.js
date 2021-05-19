@@ -14,4 +14,6 @@ const connect = async () => {
     }
 };
 
+mongoose.set('useCreateIndex', true);
+
 module.exports = {connect, DB_URL};

@@ -1,20 +1,46 @@
 require('dotenv').config();
+
+const express = require('express');
+const passport = require('passport');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const db = require('./db');
+const indexRoutes = require('./routes/index.routes');
+const authRoutes = require('./routes/auth.routes');
 db.connect();
 
 const PORT = 5000;
 
-const express = require('express');
-
 const app = express();
 
-const router = express.Router();
+/* const router = express.Router(); */
 
 /* const PORT = process.env.PORT; */
 
-app.use('/', (req, res) => {
+require('./passport/passport');
+
+app.use(session({
+    secret:'AasWsfi.854-@',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 48 * 60 * 60 * 1000
+    },
+    store:MongoStore.create({mongoUrl:db.DB_URL}),
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+/* app.use('/', (req, res) => {
     res.send('streamly');
-});
+}); */
+
+app.use(passport.initialize());
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+app.use('/', indexRoutes);
+app.use('/auth', authRoutes);
+
 
 const serverCallback = () => {
     console.log(`server port: ${PORT}`);
@@ -32,7 +58,7 @@ app.use('*', (req, res, next) => {
 
 //creamos el middleware para la gestion de errores
 
-app.use((error, req, res, next) => {
+app.use((error, req, res,) => {
     return res.status(error.status || 500).json(error.message || 'Unexpected error');
 
 });
