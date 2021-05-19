@@ -12,6 +12,6 @@ const connect = async () => {
     } catch (error) {
         console.log('Error conectado con la Base de Datos', error);
     }
-}
+};
 
-module.exports = {connect, DB_URL}
+module.exports = {connect, DB_URL};
