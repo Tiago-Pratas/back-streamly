@@ -74,5 +74,5 @@ const loginStrategy = new LocalStrategy(
     }
 );
 
-passport.use('acceso', loginStrategy);
-passport.use('registro', registerStrategy);
+passport.use('login', loginStrategy);
+passport.use('register', registerStrategy);
