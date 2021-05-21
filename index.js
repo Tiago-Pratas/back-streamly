@@ -32,6 +32,7 @@ app.use(session({
     },
     store:MongoStore.create({mongoUrl:db.DB_URL}),
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 

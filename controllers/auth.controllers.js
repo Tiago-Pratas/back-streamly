@@ -1,14 +1,14 @@
 const passport = require('passport');
 
 //auth/register
-const registerPost =  (req, res, next) => {
-    const {email, password, username} = req.body;
-    console.log('Registrando usuario...');
+const registerPost = (req, res, next) => {
+    const { email, password, username } = req.body;
+    console.log('Registering user...');
     if (!email || !password || !username) {
         const error = new Error('User, email and password are required');
         return res.json(error.message);
     }
-    passport.authenticate('registro', (error, user) => {
+    passport.authenticate('register', (error, user) => {
         if (error) {
             return res.json(error.message);
         }
@@ -21,20 +21,19 @@ const registerPost =  (req, res, next) => {
 
 //auth/login
 const loginPost = (req, res, next) => {
-    const {username, email, password} = req.body;
-    console.log('Logueando al usuario...', req.body);
+    const { username, email, password } = req.body;
 
-    if(!email|| !password || !username) {
+    if (!email || !password || !username) {
         const error = new Error('User, email and password are required');
         return res.json(error.message);
     }
-    passport.authenticate('acceso', (error, user) => {
-        if(error) {
+    passport.authenticate('login', (error, user) => {
+        if (error) {
             return res.json(error.message);
         }
 
         req.login(user, (error) => {
-            if(error) {
+            if (error) {
                 return res.send(error.message);
             }
             return res.send(user);
@@ -46,26 +45,33 @@ const loginPost = (req, res, next) => {
 
 //auth/logout
 const logoutPost = (req, res) => {
-    console.log('req.user', req.user);
-
-    if(req.user) {
+    if (req.user) {
         req.logout();
 
         req.session.destroy(() => {
             res.clearCookie('connect.sid');
-            return res.json('Usuario Deslogueado');
+            return res.json('Logout user');
         });
-    }else {
+    } else {
         return res.json('No user found');
     }
 };
 
+//auth/check-session
+const checkSession = async (req, res, next) => {
+    if (req.user) {
+        const userRegister = req.user;
+        userRegister.password = null;
+        return res.status(200).json(userRegister);
+    } else {
+        const error = new Error('Unexpected error');
+        return res.status(401).json(error.message);
+    }
+};
 
 module.exports = {
     registerPost,
     loginPost,
     logoutPost,
+    checkSession,
 };
-
-
-
