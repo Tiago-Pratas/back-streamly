@@ -15,6 +15,14 @@ const app = express();
 
 require('./passport/passport');
 
+//allow CORS
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, HEAD, OPTIONS, PUT, PATCH, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
+
 app.use(session({
     secret:process.env.JWT_SECRET,
     resave: false,
