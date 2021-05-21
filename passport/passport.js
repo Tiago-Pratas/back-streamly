@@ -2,11 +2,13 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 const User = require('../model/User');
+
 const SALT_ROUNDS = 10;
 
 passport.serializeUser((user, done) => {
     return done(null, user._id);
 });
+
 passport.deserializeUser(async(userId, done) => {
     try {
         const existingUser = await User.findById(userId);
@@ -15,6 +17,12 @@ passport.deserializeUser(async(userId, done) => {
         return done(error);
     }
 });
+
+const validate = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+};
+
 
 const registerStrategy = new LocalStrategy(
     {
@@ -27,6 +35,29 @@ const registerStrategy = new LocalStrategy(
             const previousUser = await User.findOne({ email });
             if (previousUser) {
                 const error = new Error('User already exist!');
+                return done(error);
+            }
+
+            const username = req.body.username;
+
+            const previousUsername = await User.findOne({
+                username: {$regex: new RegExp(username, 'i')},
+            });
+
+            if (previousUsername) {
+                const error = new Error('The user name already exists');
+                return done(error);
+            }
+
+            if (email.length < 6) {
+                const error = new Error('Email must be 6 characters min');
+                return done(error);
+            }
+
+            const validEmail = validate(email);
+
+            if (!validEmail) {
+                const error = new Error('Invalid Email');
                 return done(error);
             }
 
