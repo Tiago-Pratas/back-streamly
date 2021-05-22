@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const Schema = mongoose.Schema;
 const episodeSchema = new Schema({
     number: {type: Number, required: true},

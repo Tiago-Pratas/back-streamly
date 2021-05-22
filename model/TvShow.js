@@ -6,7 +6,7 @@ const tvShowSchema = new Schema({
     episodes: {type: String, required: true},
     started: {type: String, required: true},
     ended: {type: String, required: true},
-    providers: [{name: {type: String}, logo: {type: String, required: true}}],
+    providers: [ { type: mongoose.Types.ObjectId, ref: 'provider' } ],
     language: {type: String, required: true},
     tagline: {type: String, required: true},
     image: [{poster: {type: String, required: true}, back: {type: String, required: true}}],
