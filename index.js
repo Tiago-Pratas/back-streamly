@@ -5,8 +5,11 @@ const passport = require('passport');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const db = require('./db');
+const cors = require('cors');
+
 const indexRoutes = require('./routes/index.routes');
 const authRoutes = require('./routes/auth.routes');
+
 db.connect();
 
 const PORT = 5000;
@@ -22,6 +25,13 @@ app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
+
+app.use(
+    cors({
+        origin: ['http://localhost:3000'],
+        credentials: true,
+    }),
+);
 
 app.use(session({
     secret:process.env.JWT_SECRET,
