@@ -21,10 +21,10 @@ const registerPost = (req, res, next) => {
 
 //auth/login
 const loginPost = (req, res, next) => {
-    const { username, email, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!email || !password || !username) {
-        const error = new Error('User, email and password are required');
+    if (!email || !password) {
+        const error = new Error('Email and password are required');
         return res.json(error.message);
     }
     passport.authenticate('login', (error, user) => {
@@ -36,7 +36,9 @@ const loginPost = (req, res, next) => {
             if (error) {
                 return res.send(error.message);
             }
-            return res.send(user);
+            const userLogged = user;
+            userLogged.password = null;
+            return res.send(userLogged);
         });
 
         /* return res.json(user); */
@@ -58,7 +60,7 @@ const logoutPost = (req, res) => {
 };
 
 //auth/check-session
-const checkSession = async (req, res, next) => {
+const checkSession = async (req, res) => {
     if (req.user) {
         const userRegister = req.user;
         userRegister.password = null;
