@@ -2,6 +2,8 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 const User = require('../model/User');
+const Token = require('../model/Token');
+const crypto = require('crypto');
 
 const SALT_ROUNDS = 10;
 
@@ -70,6 +72,16 @@ const registerStrategy = new LocalStrategy(
             });
 
             const savedUser = await newUser.save();
+
+            //create verification token
+            const newToken = new Token({
+                userId: savedUser._id,
+                email,
+                verificationToken: crypto.randomBytes(25).toString('hex'),
+            });
+
+            await newToken.save();
+
             return done(null, savedUser);
         } catch (error) {
             return done(error);

@@ -1,4 +1,5 @@
 const passport = require('passport');
+const { sendEmailToken } = require('../services/nodemailer');
 
 //auth/register
 const registerPost = (req, res, next) => {
@@ -8,16 +9,24 @@ const registerPost = (req, res, next) => {
         const error = new Error('User, email and password are required');
         return res.json(error.message);
     }
-    passport.authenticate('register', (error, user) => {
+    passport.authenticate('register', (error, user, token) => {
         if (error) {
             return res.json(error.message);
         }
+
+        //send email with verification link
+        sendEmailToken(email, token.verificationToken, req.protocol, req.get('host'));
         const userRegister = user;
         userRegister.password = null;
 
         return res.json(userRegister);
     })(req, res, next);
 };
+
+/**
+ * 
+ * TODO: routes to reset password, confirm email and whatnot...
+ */
 
 //auth/login
 const loginPost = (req, res, next) => {

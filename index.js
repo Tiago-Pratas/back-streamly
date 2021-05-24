@@ -15,7 +15,7 @@ const PORT = 5000;
 
 const app = express();
 
-require('./passport/passport');
+require('./services/passport');
 
 //allow CORS
 app.use(function(req, res, next) {
