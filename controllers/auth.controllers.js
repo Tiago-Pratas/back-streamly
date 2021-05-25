@@ -1,5 +1,8 @@
 const passport = require('passport');
 const { sendEmailToken } = require('../services/nodemailer');
+const crypto = require('crypto');
+const Token = require('../model/Token');
+const User = require('../model/User');
 
 //auth/register
 const registerPost = (req, res, next) => {
@@ -22,11 +25,6 @@ const registerPost = (req, res, next) => {
         return res.json(userRegister);
     })(req, res, next);
 };
-
-/**
- * 
- * TODO: routes to reset password, confirm email and whatnot...
- */
 
 //auth/login
 const loginPost = (req, res, next) => {
@@ -80,9 +78,59 @@ const checkSession = async (req, res) => {
     }
 };
 
+/* POST /verify/resend
+* resend token email
+*/
+const resendToken = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+
+        const findUser = await User.findOne({ email });
+
+        if (!findUser.length) {
+            const error = new Error('Please create an account');
+
+            return res.status(401).json(error);
+        }
+
+        const findToken = await Token.findOne({ userId: findUser._id, email });
+
+        if (!findToken.length) {
+            const newToken = new Token({
+                userId: findUser._id,
+                email,
+                verificationToken: crypto.randomBytes(25).toString('hex'),
+            });
+
+            const saveToken = await newToken.save();
+
+            return await sendEmailToken(
+                email,
+                saveToken.verificationToken,
+                req.protocol,
+                req.get('host'),
+            );
+        }
+
+        return await sendEmailToken(
+            email,
+            findToken.verificationToken,
+            req.protocol,
+            req.get('host'),
+        );
+    } catch (e) {
+        next(e);
+    }
+};
+
+/**
+ * TODO: routes for email validation, password reset and tutorial completed
+ */
+
 module.exports = {
     registerPost,
     loginPost,
     logoutPost,
     checkSession,
+    resendToken
 };
