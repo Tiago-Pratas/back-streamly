@@ -6,8 +6,7 @@ const userSchema = new Schema({
     email: {type: String, required: true, unique: true, minLength: 6},
     password: {type: String, required: true, minLength: 8},
     id_providers: [{type: String}],
-    id_movies: [{type: String}],
-    id_tvShows: [{type: String}],
+    id_medias: [{type: String}],
     isActive: {type:Boolean, default: false, required: true},
 }, {
     timestamps: true

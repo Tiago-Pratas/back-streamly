@@ -1,19 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../model/User');
+const dataController = require('../controllers/data.controllers');
 
-router.post('/set', async (req,res,next) => {
-    try {
-        const updateUser = await User.findOneAndUpdate(
-            { email : req.body.email }, 
-            { $push: { id_providers: req.body.id } }, 
-            { new: true });
 
-        return res.json(updateUser);
-        
-    } catch (err) {
-        next(err);
-    }
-});
+
+router.post('/set', dataController.providerPost);
+
+router.post('/set-favorites', dataController.favoritesPost);
+
 
 module.exports = router;
