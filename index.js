@@ -8,6 +8,7 @@ const db = require('./db');
 
 const indexRoutes = require('./routes/index.routes');
 const authRoutes = require('./routes/auth.routes');
+const providerRoutes = require('./routes/provider.routes');
 
 db.connect();
 
@@ -39,11 +40,11 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(passport.initialize());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
+app.use('/providers', providerRoutes);
 
 
 const serverCallback = () => {
