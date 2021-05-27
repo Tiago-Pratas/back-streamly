@@ -4,9 +4,15 @@ const dataController = require('../controllers/data.controllers');
 
 
 
-router.post('/set', dataController.providerPost);
+router.post('/providers', dataController.providerPost);
 
-router.post('/set-favorites', dataController.favoritesPost);
+router.post('/favorites', dataController.favoritesPost);
 
+router.post('/deletefavorites', async (req, res) => {
+    return res.status(200).json('that was it for fucks sake');
+});
+
+
+console.log(router.stack);
 
 module.exports = router;
