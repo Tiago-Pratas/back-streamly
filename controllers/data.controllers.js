@@ -3,9 +3,25 @@ const User = require('../model/User');
 
 const favoritesPost = async (req, res, next) => {
     try {
+
         const updateUser = await User.findOneAndUpdate(
             { email: req.body.email },
             { $push: { id_medias: req.body.id } },
+            { new: true }
+        );
+
+        return res.json(updateUser);
+    } catch (err) {
+        next(err);
+    }
+};
+
+const deleteFavoritePost = async (req, res, next) => {
+    try {
+
+        const updateUser = await User.findOneAndUpdate(
+            { email: req.body.email },
+            { $pull: { id_medias: req.body.id } },
             { new: true }
         );
 
@@ -32,4 +48,5 @@ const providerPost = async (req, res, next) => {
 module.exports = {
     favoritesPost,
     providerPost,
+    deleteFavoritePost,
 };

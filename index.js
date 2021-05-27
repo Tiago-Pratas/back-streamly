@@ -44,7 +44,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
-app.use('/providers', dataRoutes);
+app.use('/data', dataRoutes);
 
 
 const serverCallback = () => {
