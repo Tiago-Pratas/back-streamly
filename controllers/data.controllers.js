@@ -1,4 +1,3 @@
-
 const User = require('../model/User');
 
 const favoritesPost = async (req, res, next) => {
@@ -10,7 +9,7 @@ const favoritesPost = async (req, res, next) => {
             { new: true }
         );
 
-        return res.json(updateUser);
+        return res.status(200).json(updateUser);
     } catch (err) {
         next(err);
     }
@@ -39,7 +38,7 @@ const providerPost = async (req, res, next) => {
             { new: true }
         );
 
-        return res.json(updateUser);
+        return res.status(200).json(updateUser);
     } catch (err) {
         next(err);
     }

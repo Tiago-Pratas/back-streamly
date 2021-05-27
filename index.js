@@ -8,7 +8,7 @@ const db = require('./db');
 
 const indexRoutes = require('./routes/index.routes');
 const authRoutes = require('./routes/auth.routes');
-const dataRoutes = require('./routes/data.routes');
+const setRoutes = require('./routes/data.routes');
 
 db.connect();
 
@@ -44,7 +44,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
-app.use('/data', dataRoutes);
+app.use('/set', setRoutes);
 
 
 const serverCallback = () => {
