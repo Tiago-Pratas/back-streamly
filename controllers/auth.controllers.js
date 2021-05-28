@@ -17,7 +17,7 @@ const registerPost = (req, res, next) => {
             return res.json(error.message);
         }
         //send email with verification link
-        sendEmailToken(email, token.verificationToken, req.protocol, req.get('host'));
+        sendEmailToken(email, token.verificationToken, req.get('origin'));
         const userRegister = user;
         userRegister.password = null;
 
@@ -103,22 +103,12 @@ const resendToken = async (req, res, next) => {
 
             const saveToken = await newToken.save();
 
-            await sendEmailToken(
-                email,
-                saveToken.verificationToken,
-                req.protocol,
-                req.get('host'),
-            );
+            await sendEmailToken(email, saveToken.verificationToken, req.get('origin'));
 
             return res.status(200).json('Le hemos enviado un correo de confirmacion');
         }
 
-        return await sendEmailToken(
-            email,
-            findToken.verificationToken,
-            req.protocol,
-            req.get('host'),
-        );
+        return await sendEmailToken(email, findToken.verificationToken, req.get('origin'));
     } catch (e) {
         next(e);
     }
@@ -186,12 +176,7 @@ const resetPassword = async (req, res, next) => {
 
         const saveToken = await newToken.save();
 
-        await sendEmailToken(
-            email,
-            saveToken.verificationToken,
-            req.protocol,
-            req.get('host'),
-        );
+        await sendEmailToken(email, saveToken.verificationToken, req.get('origin'));
 
         return res.status(200).json('Le hemos enviado un email a su direccion');
     } catch (err) {

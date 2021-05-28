@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-async function sendEmailToken(userEmail, verificationToken, protocol, host) {
+async function sendEmailToken(userEmail, verificationToken, host) {
 
     const transporter = nodemailer.createTransport({
         service: process.env.EMAIL_SERVICE,
@@ -21,7 +21,8 @@ async function sendEmailToken(userEmail, verificationToken, protocol, host) {
         to: `${userEmail}`,
         subject: 'email confirmation',
         text: 'Email verification from the comic books',
-        html: encodeURI(`${protocol}://${host}/auth/verify/${userEmail}/${verificationToken}`),
+        //don't forget to change the host here for it's hardcoded
+        html: encodeURI(`${host}/auth/verify/${userEmail}/${verificationToken}`),
     });
 
     console.log(info);
