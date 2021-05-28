@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const dataController = require('../controllers/data.controllers');
+const setController = require('../controllers/set.controllers');
 const User = require('../model/User');
 
-router.post('/providers', dataController.providerPost);
+router.post('/providers', setController.providerPost);
 
-router.post('/favorites', dataController.favoritesPost);
+router.post('/favorites', setController.favoritesPost);
 
 router.post('/deletefavorites', async (req, res, next) => {
     try {

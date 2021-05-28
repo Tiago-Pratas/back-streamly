@@ -80,9 +80,9 @@ const registerStrategy = new LocalStrategy(
                 verificationToken: crypto.randomBytes(25).toString('hex'),
             });
 
-            await newToken.save();
+            const savedToken = await newToken.save();
 
-            return done(null, savedUser);
+            return done(null, savedUser, savedToken);
         } catch (error) {
             return done(error);
         }

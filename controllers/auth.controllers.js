@@ -16,7 +16,6 @@ const registerPost = (req, res, next) => {
         if (error) {
             return res.json(error.message);
         }
-
         //send email with verification link
         sendEmailToken(email, token.verificationToken, req.protocol, req.get('host'));
         const userRegister = user;
@@ -104,12 +103,14 @@ const resendToken = async (req, res, next) => {
 
             const saveToken = await newToken.save();
 
-            return await sendEmailToken(
+            await sendEmailToken(
                 email,
                 saveToken.verificationToken,
                 req.protocol,
                 req.get('host'),
             );
+
+            return res.status(200).json('Le hemos enviado un correo de confirmacion');
         }
 
         return await sendEmailToken(
@@ -127,10 +128,83 @@ const resendToken = async (req, res, next) => {
  * TODO: routes for email validation, password reset and tutorial completed
  */
 
+/**
+ * GET verify/:email/:verificationToken
+ * verify if token corresponds to email
+ */
+const verifyToken = async (req, res, next) => {
+    try {
+        const { email, verificationToken } = req.params;
+
+        console.log(email);
+
+        const foundToken = await Token.findOne({ email, verificationToken });
+
+        //confirm email by changing the isActive field to true
+        if (foundToken && foundToken.pwdReset == false ) {
+            const updatedUser = await User.findByIdAndUpdate(
+                foundToken.userId,
+                { isActive: true },
+                { new: true },
+            );
+            
+            updatedUser.password = null;
+
+            return res.status(200).json(updatedUser);
+        }
+        if (foundToken && foundToken.pwdReset == true ) {
+            await User.findOneAndUpdate(
+                foundToken.userId,
+                { password: req.body.password },
+                { new: true },
+            );
+
+            return res.status(200).json('Contraseña actualizada con exito');
+        }
+
+
+    } catch (err) {
+        next(err);
+    } 
+};
+
+const resetPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+
+        const updateUser = await User.findOneAndUpdate({ email },
+            { pwdReset: true },
+            {new: true});
+
+        if(!updateUser) return res.status(200).json('no hemos encontrado su direccion, por favor asegurese que esta está correcta');
+
+        const newToken = new Token({
+            userId: req.body.id,
+            email,
+            verificationToken: crypto.randomBytes(25).toString('hex'),
+        });
+
+        const saveToken = await newToken.save();
+
+        await sendEmailToken(
+            email,
+            saveToken.verificationToken,
+            req.protocol,
+            req.get('host'),
+        );
+
+        return res.status(200).json('Le hemos enviado un email a su direccion');
+    } catch (err) {
+        next(err);
+    }
+};
+
 module.exports = {
     registerPost,
     loginPost,
     logoutPost,
     checkSession,
-    resendToken
+    resendToken,
+    verifyToken,
+    resetPassword
 };
