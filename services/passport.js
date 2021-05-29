@@ -80,9 +80,9 @@ const registerStrategy = new LocalStrategy(
                 verificationToken: crypto.randomBytes(25).toString('hex'),
             });
 
-            await newToken.save();
+            const savedToken = await newToken.save();
 
-            return done(null, savedUser);
+            return done(null, savedUser, savedToken);
         } catch (error) {
             return done(error);
         }
@@ -110,6 +110,13 @@ const loginStrategy = new LocalStrategy(
                 const error = new Error('Email or password not valid');
                 return done(error);
             }
+
+            if(!currentUser.isActive) {
+                console.log(currentUser);
+                const error = new Error('Please validate your email');
+                return done(error);
+            }
+
             return done(null, currentUser);
         } catch (error) {
             return done(error);
