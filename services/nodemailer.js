@@ -22,10 +22,10 @@ async function sendEmailToken(userEmail, verificationToken, host) {
         subject: 'email confirmation',
         text: 'Email verification from the comic books',
         //don't forget to change the host here for it's hardcoded
-        html: encodeURI(`${host}/auth/verify/${userEmail}/${verificationToken}`),
+        html: encodeURI(`${host}/user/${userEmail}/${verificationToken}`),
     });
 
-    console.log(info);
+    console.log('lol',info);
 
     return info;
 

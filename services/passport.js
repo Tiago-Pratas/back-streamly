@@ -110,6 +110,13 @@ const loginStrategy = new LocalStrategy(
                 const error = new Error('Email or password not valid');
                 return done(error);
             }
+
+            if(!currentUser.isActive) {
+                console.log(currentUser);
+                const error = new Error('Please validate your email');
+                return done(error);
+            }
+
             return done(null, currentUser);
         } catch (error) {
             return done(error);
