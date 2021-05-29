@@ -3,9 +3,13 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-async function sendEmailToken(userEmail, verificationToken, protocol, host) {
+async function sendEmailToken(userEmail, verificationToken, host) {
+
     const transporter = nodemailer.createTransport({
         service: process.env.EMAIL_SERVICE,
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
         auth: {
             user: process.env.EMAIL_ACC,
             pass: process.env.EMAIL_PWD,
@@ -17,8 +21,11 @@ async function sendEmailToken(userEmail, verificationToken, protocol, host) {
         to: `${userEmail}`,
         subject: 'email confirmation',
         text: 'Email verification from the comic books',
-        html: encodeURI(`${protocol}://${host}/auth/verify/${userEmail}/${verificationToken}`),
+        //don't forget to change the host here for it's hardcoded
+        html: encodeURI(`${host}/user/${userEmail}/${verificationToken}`),
     });
+
+    console.log('lol',info);
 
     return info;
 

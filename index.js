@@ -8,7 +8,7 @@ const db = require('./db');
 
 const indexRoutes = require('./routes/index.routes');
 const authRoutes = require('./routes/auth.routes');
-const setRoutes = require('./routes/data.routes');
+const setRoutes = require('./routes/set.routes');
 
 db.connect();
 
