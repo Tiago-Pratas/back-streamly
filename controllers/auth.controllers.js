@@ -1,8 +1,8 @@
 const passport = require('passport');
-const { sendEmailToken } = require('../services/nodemailer');
 const crypto = require('crypto');
 const Token = require('../model/Token');
 const User = require('../model/User');
+const { sendEmailToken } = require('../services/nodemailer');
 
 //auth/register
 const registerPost = (req, res, next) => {
@@ -10,11 +10,12 @@ const registerPost = (req, res, next) => {
     console.log('Registering user...');
     if (!email || !password || !username) {
         const error = new Error('User, email and password are required');
-        return res.json(error.message);
+        error.status = 400;
+        return next(error.message);
     }
     passport.authenticate('register', (error, user, token) => {
         if (error) {
-            return res.json(error.message);
+            return next(error.message);
         }
         //send email with verification link
         sendEmailToken(email, token.verificationToken, req.get('origin'));
@@ -31,20 +32,21 @@ const loginPost = (req, res, next) => {
 
     if (!email || !password) {
         const error = new Error('Email and password are required');
-        return res.json(error.message);
+        error.status = 400;
+        return next(error.message);
     }
     passport.authenticate('login', (error, user) => {
         if (error) {
-            return res.json(error.message);
+            return next(error.message);
         }
 
         req.login(user, (error) => {
             if (error) {
-                return res.send(error.message);
+                return next(error.message);
             }
             const userLogged = user;
             userLogged.password = null;
-            return res.send(userLogged);
+            return res.json(userLogged);
         });
 
         /* return res.json(user); */
@@ -61,7 +63,9 @@ const logoutPost = (req, res) => {
             return res.json('Logout user');
         });
     } else {
-        return res.json('No user found');
+        const error = new Error('No user found');
+        error.status = 401;
+        return next(error);
     }
 };
 
@@ -73,7 +77,8 @@ const checkSession = async (req, res) => {
         return res.status(200).json(userRegister);
     } else {
         const error = new Error('Unexpected error');
-        return res.status(401).json(error.message);
+        error.status = 401;
+        return next(error.message);
     }
 };
 
@@ -88,8 +93,8 @@ const resendToken = async (req, res, next) => {
 
         if (!findUser.length) {
             const error = new Error('Please create an account');
-
-            return res.status(401).json(error);
+            error.status = 401;
+            return next(error);
         }
 
         const findToken = await Token.findOne({ userId: findUser._id, email });
@@ -105,12 +110,12 @@ const resendToken = async (req, res, next) => {
 
             await sendEmailToken(email, saveToken.verificationToken, req.get('origin'));
 
-            return res.status(200).json('Le hemos enviado un correo de confirmacion');
+            return res.json('Le hemos enviado un correo de confirmacion');
         }
 
         return await sendEmailToken(email, findToken.verificationToken, req.get('origin'));
-    } catch (e) {
-        next(e);
+    } catch (err) {
+        next(err);
     }
 };
 
@@ -131,7 +136,7 @@ const verifyToken = async (req, res, next) => {
         const foundToken = await Token.findOne({ email, verificationToken });
 
         //confirm email by changing the isActive field to true
-        if (foundToken && foundToken.pwdReset == false ) {
+        if (foundToken && !foundToken.pwdReset ) {
             const updatedUser = await User.findByIdAndUpdate(
                 foundToken.userId,
                 { isActive: true },
@@ -140,16 +145,16 @@ const verifyToken = async (req, res, next) => {
             
             updatedUser.password = null;
 
-            return res.status(200).json(updatedUser);
+            return res.json(updatedUser);
         }
-        if (foundToken && foundToken.pwdReset == true ) {
+        if (foundToken && foundToken.pwdReset) {
             await User.findOneAndUpdate(
                 foundToken.userId,
                 { password: req.body.password },
                 { new: true },
             );
 
-            return res.status(200).json('Contraseña actualizada con exito');
+            return res.json('Contraseña actualizada con exito');
         }
 
 
@@ -164,9 +169,9 @@ const resetPassword = async (req, res, next) => {
 
         const updateUser = await User.findOneAndUpdate({ email },
             { pwdReset: true },
-            {new: true});
+            { new: true });
 
-        if(!updateUser) return res.status(200).json('no hemos encontrado su direccion, por favor asegurese que esta está correcta');
+        if(!updateUser) return res.json('no hemos encontrado su direccion, por favor asegurese que esta está correcta');
 
         const newToken = new Token({
             userId: req.body.id,
@@ -178,7 +183,7 @@ const resetPassword = async (req, res, next) => {
 
         await sendEmailToken(email, saveToken.verificationToken, req.get('origin'));
 
-        return res.status(200).json('Le hemos enviado un email a su direccion');
+        return res.json('Le hemos enviado un email a su direccion');
     } catch (err) {
         next(err);
     }

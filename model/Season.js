@@ -1,6 +1,7 @@
 const mongoose= require('mongoose');
 
 const Schema = mongoose.Schema;
+
 const seasonSchema = new Schema({
     tvShow: {type: mongoose.Types.ObjectId, ref: 'tvShow'},
     episodes: [ { type: mongoose.Types.ObjectId, ref: 'episode' } ],
@@ -10,6 +11,6 @@ const seasonSchema = new Schema({
     timestamps: true,
 });
 
-const Season = mongoose.model('Season', seasonSchema);
+const Season = mongoose.model('Seasons', seasonSchema);
 
 module.exports = Season;

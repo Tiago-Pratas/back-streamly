@@ -12,6 +12,6 @@ const episodeSchema = new Schema({
     timestamps: true,
 });
 
-const Episode = mongoose.model('Episode', episodeSchema);
+const Episode = mongoose.model('Episodes', episodeSchema);
 
 module.exports = Episode;

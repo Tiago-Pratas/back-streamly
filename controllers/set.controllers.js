@@ -2,14 +2,13 @@ const User = require('../model/User');
 
 const favoritesPost = async (req, res, next) => {
     try {
-
         const updateUser = await User.findOneAndUpdate(
             { email: req.body.email },
             { $push: { id_medias: req.body.id } },
             { new: true }
         );
 
-        return res.status(200).json(updateUser);
+        return res.json(updateUser);
     } catch (err) {
         next(err);
     }
@@ -38,7 +37,7 @@ const providerPost = async (req, res, next) => {
             { new: true }
         );
 
-        return res.status(200).json(updateUser);
+        return res.json(updateUser);
     } catch (err) {
         next(err);
     }

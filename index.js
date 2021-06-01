@@ -18,7 +18,7 @@ const app = express();
 
 require('./services/passport');
 
-//allow CORS
+// allow CORS
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Credentials', true);
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -34,7 +34,7 @@ app.use(session({
     cookie: {
         maxAge: 48 * 60 * 60 * 1000
     },
-    store:MongoStore.create({mongoUrl:db.DB_URL}),
+    store: MongoStore.create({ mongoUrl: db.DB_URL }),
 }));
 
 app.use(passport.initialize());
@@ -42,16 +42,10 @@ app.use(passport.session());
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
 app.use('/set', setRoutes);
-
-
-const serverCallback = () => {
-    console.log(`server port: ${PORT}`);
-};
-
-app.listen(PORT, serverCallback);
 
 //middleware to handle route exceptions
 app.use('*', (req, res, next) => {
@@ -63,8 +57,13 @@ app.use('*', (req, res, next) => {
 //middleware to handle exceptions
 app.use((error, req, res,) => {
     return res.status(error.status || 500).json(error.message || 'Unexpected error');
-
 });
+
+const serverCallback = () => {
+    console.log(`server port: ${PORT}`);
+};
+
+app.listen(PORT, serverCallback);
 
 
 

@@ -18,7 +18,7 @@ async function sendEmailToken(userEmail, verificationToken, host) {
 
     const info = await transporter.sendMail({
         from: '"Streamly" <no-reply@streamly.com>',
-        to: `${userEmail}`,
+        to: userEmail,
         subject: 'email confirmation',
         text: 'Email verification from the comic books',
         //don't forget to change the host here for it's hardcoded

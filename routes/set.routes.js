@@ -7,9 +7,9 @@ router.post('/providers', setController.providerPost);
 
 router.post('/favorites', setController.favoritesPost);
 
-router.post('/deletefavorites', async (req, res, next) => {
+router.post('/delete-favorites', async (req, res, next) => {
     try {
-        const updateUser = await User.findOneAndUpdate(
+        const updatedUser = await User.findOneAndUpdate(
             { email: req.body.email },
             { $pull: { id_medias: req.body.id } },
             { new: true }
@@ -17,10 +17,10 @@ router.post('/deletefavorites', async (req, res, next) => {
 
         console.log(req.body.id, updateUser.id_medias.length);
 
-        return res.status(200).json(updateUser);
+        return res.json(updatedUser);
 
     } catch (err) {
-        next(err);
+        return next(err);
     }
 });
 

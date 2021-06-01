@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
+
 const providerSchema = new Schema({
     name: {type: String, required: true},
     apId: {type: String, required: true},
@@ -9,7 +10,7 @@ const providerSchema = new Schema({
     timestamps: true,
 });
 
-const Provider = mongoose.model('Provider', providerSchema);
+const Provider = mongoose.model('Providers', providerSchema);
 
 module.exports = Provider;
 
